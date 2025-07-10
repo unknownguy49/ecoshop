@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   description:
     "Shop smarter, shop greener. Reduce waste, carbon emissions, and promote conscious shopping with our curated collection of eco-friendly products.",
   generator: "v0.dev",
+  icons: {
+    icon: "/ecoshop.png",
+    shortcut: "/ecoshop.png",
+    apple: "/ecoshop.png",
+  },
 };
 
 export default function RootLayout({
