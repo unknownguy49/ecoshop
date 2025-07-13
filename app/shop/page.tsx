@@ -1,34 +1,70 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Leaf, Recycle, Package, MapPin, Search, ShoppingCart, Heart, Star, TrendingDown, Award } from "lucide-react"
-import Image from "next/image"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Leaf,
+  Recycle,
+  Package,
+  MapPin,
+  Search,
+  ShoppingCart,
+  Heart,
+  Star,
+  TrendingDown,
+  Award,
+} from "lucide-react";
+import Image from "next/image";
 
-const products = [
+type CarbonFootprint = "very-low" | "low" | "medium" | "high";
+type BadgeType = "organic" | "recyclable" | "low-packaging" | "locally-sourced";
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  rating: number;
+  reviews: number;
+  badges: BadgeType[];
+  carbonFootprint: CarbonFootprint;
+  description: string;
+  category: string;
+};
+
+const products: Product[] = [
   {
     id: 1,
     name: "Organic Cotton T-Shirt",
     price: 29.99,
     originalPrice: 39.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image:
+      "https://image.hm.com/assets/hm/06/c3/06c3e1d558e9a93ee2bd251cbdaefcbda928a17d.jpg?imwidth=1260",
     rating: 4.8,
     reviews: 124,
     badges: ["organic", "recyclable", "low-packaging"],
     carbonFootprint: "low",
-    description: "Soft, breathable organic cotton tee made from sustainable farming practices.",
+    description:
+      "Soft, breathable organic cotton tee made from sustainable farming practices.",
     category: "clothing",
   },
   {
     id: 2,
     name: "Bamboo Water Bottle",
     price: 24.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image:
+      "https://cdn.shopify.com/s/files/1/1616/9509/products/SS_570x570_crop_center@2x.jpg?v=1611093585",
     rating: 4.9,
     reviews: 89,
     badges: ["recyclable", "locally-sourced"],
@@ -41,7 +77,7 @@ const products = [
     name: "Solar Power Bank",
     price: 49.99,
     originalPrice: 69.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image: "https://m.media-amazon.com/images/I/71TmDbz-G-L._AC_SL1500_.jpg",
     rating: 4.7,
     reviews: 156,
     badges: ["recyclable", "low-packaging"],
@@ -53,19 +89,22 @@ const products = [
     id: 4,
     name: "Organic Skincare Set",
     price: 89.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image:
+      "https://i.pinimg.com/originals/3d/d6/1f/3dd61f6ca74afa7196878eaae78fd259.jpg",
     rating: 4.9,
     reviews: 203,
     badges: ["organic", "recyclable", "locally-sourced"],
     carbonFootprint: "low",
-    description: "Complete skincare routine with certified organic ingredients.",
+    description:
+      "Complete skincare routine with certified organic ingredients.",
     category: "beauty",
   },
   {
     id: 5,
     name: "Recycled Yoga Mat",
     price: 39.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image:
+      "https://images.squarespace-cdn.com/content/5429e65fe4b0a96a7d7b36fc/1576201058571-YCC6LBGXIKB8MIZ71QFV/SugaMat.1.jpg?format=1500w&content-type=image%2Fjpeg",
     rating: 4.6,
     reviews: 78,
     badges: ["recyclable", "low-packaging"],
@@ -77,7 +116,8 @@ const products = [
     id: 6,
     name: "Biodegradable Phone Case",
     price: 19.99,
-    image: "/placeholder.svg?height=300&width=300",
+    image:
+      "https://tse1.mm.bing.net/th/id/OIP.12lWxcy1LBuQvBGiYrlwnAHaFa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
     rating: 4.5,
     reviews: 92,
     badges: ["organic", "recyclable"],
@@ -85,82 +125,98 @@ const products = [
     description: "Protective phone case that naturally decomposes.",
     category: "accessories",
   },
-]
+];
 
 const badgeConfig = {
   organic: { icon: Leaf, label: "Organic", color: "bg-green-500" },
   recyclable: { icon: Recycle, label: "Recyclable", color: "bg-blue-500" },
-  "low-packaging": { icon: Package, label: "Low Packaging", color: "bg-purple-500" },
+  "low-packaging": {
+    icon: Package,
+    label: "Low Packaging",
+    color: "bg-purple-500",
+  },
   "locally-sourced": { icon: MapPin, label: "Local", color: "bg-orange-500" },
-}
+};
 
 const carbonColors = {
   "very-low": "text-green-600",
   low: "text-green-500",
   medium: "text-yellow-500",
   high: "text-red-500",
-}
+};
 
 export default function ShopPage() {
-  const [filteredProducts, setFilteredProducts] = useState(products)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [ecoOnly, setEcoOnly] = useState(false)
-  const [sortBy, setSortBy] = useState("featured")
-  const [cart, setCart] = useState<number[]>([])
-  const [wishlist, setWishlist] = useState<number[]>([])
+  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [ecoOnly, setEcoOnly] = useState(false);
+  const [sortBy, setSortBy] = useState("featured");
+  const [cart, setCart] = useState<number[]>([]);
+  const [wishlist, setWishlist] = useState<number[]>([]);
 
   useEffect(() => {
-    let filtered = products
+    let filtered = products;
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+          product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
     // Category filter
     if (selectedCategory !== "all") {
-      filtered = filtered.filter((product) => product.category === selectedCategory)
+      filtered = filtered.filter(
+        (product) => product.category === selectedCategory
+      );
     }
 
     // Eco-friendly only filter
     if (ecoOnly) {
       filtered = filtered.filter(
-        (product) => product.badges.includes("organic") || product.badges.includes("recyclable"),
-      )
+        (product) =>
+          product.badges.includes("organic") ||
+          product.badges.includes("recyclable")
+      );
     }
 
     // Sort
     switch (sortBy) {
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price)
-        break
+        filtered.sort((a, b) => a.price - b.price);
+        break;
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price)
-        break
+        filtered.sort((a, b) => b.price - a.price);
+        break;
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating)
-        break
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
       case "carbon":
-        const carbonOrder = { "very-low": 0, low: 1, medium: 2, high: 3 }
-        filtered.sort((a, b) => carbonOrder[a.carbonFootprint] - carbonOrder[b.carbonFootprint])
-        break
+        const carbonOrder = { "very-low": 0, low: 1, medium: 2, high: 3 };
+        filtered.sort(
+          (a, b) =>
+            carbonOrder[a.carbonFootprint as CarbonFootprint] -
+            carbonOrder[b.carbonFootprint as CarbonFootprint]
+        );
+        break;
     }
 
-    setFilteredProducts(filtered)
-  }, [searchTerm, selectedCategory, ecoOnly, sortBy])
+    setFilteredProducts(filtered);
+  }, [searchTerm, selectedCategory, ecoOnly, sortBy]);
 
   const addToCart = (productId: number) => {
-    setCart((prev) => [...prev, productId])
-  }
+    setCart((prev) => [...prev, productId]);
+  };
 
   const toggleWishlist = (productId: number) => {
-    setWishlist((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]))
-  }
+    setWishlist((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-950 dark:via-emerald-950 dark:to-teal-950">
@@ -173,7 +229,8 @@ export default function ShopPage() {
             </span>
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg">
-            Discover eco-friendly products that make a difference for our planet.
+            Discover eco-friendly products that make a difference for our
+            planet.
           </p>
         </div>
 
@@ -192,7 +249,10 @@ export default function ShopPage() {
             </div>
 
             {/* Category */}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -216,13 +276,19 @@ export default function ShopPage() {
                 <SelectItem value="price-low">Price: Low to High</SelectItem>
                 <SelectItem value="price-high">Price: High to Low</SelectItem>
                 <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="carbon">Carbon Footprint: Low → High</SelectItem>
+                <SelectItem value="carbon">
+                  Carbon Footprint: Low → High
+                </SelectItem>
               </SelectContent>
             </Select>
 
             {/* Eco Filter */}
             <div className="flex items-center space-x-2">
-              <Checkbox id="eco-only" checked={ecoOnly} onCheckedChange={setEcoOnly} />
+              <Checkbox
+                id="eco-only"
+                checked={ecoOnly}
+                onCheckedChange={(checked) => setEcoOnly(checked === true)}
+              />
               <label htmlFor="eco-only" className="text-sm font-medium">
                 Eco-friendly only
               </label>
@@ -231,7 +297,9 @@ export default function ShopPage() {
             {/* Cart Info */}
             <div className="flex items-center justify-center bg-green-100 dark:bg-green-900 rounded-lg px-4 py-2">
               <ShoppingCart className="h-4 w-4 text-green-600 mr-2" />
-              <span className="text-sm font-medium text-green-700 dark:text-green-300">{cart.length} items</span>
+              <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                {cart.length} items
+              </span>
             </div>
           </div>
         </div>
@@ -255,13 +323,16 @@ export default function ShopPage() {
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-wrap gap-1">
                   {product.badges.map((badge) => {
-                    const config = badgeConfig[badge]
+                    const config = badgeConfig[badge as BadgeType];
                     return (
-                      <Badge key={badge} className={`${config.color} text-white text-xs`}>
+                      <Badge
+                        key={badge}
+                        className={`${config.color} text-white text-xs`}
+                      >
                         <config.icon className="h-3 w-3 mr-1" />
                         {config.label}
                       </Badge>
-                    )
+                    );
                   })}
                 </div>
 
@@ -273,13 +344,19 @@ export default function ShopPage() {
                   onClick={() => toggleWishlist(product.id)}
                 >
                   <Heart
-                    className={`h-4 w-4 ${wishlist.includes(product.id) ? "fill-red-500 text-red-500" : "text-gray-600"}`}
+                    className={`h-4 w-4 ${
+                      wishlist.includes(product.id)
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-600"
+                    }`}
                   />
                 </Button>
 
                 {/* Sale Badge */}
                 {product.originalPrice && (
-                  <Badge className="absolute bottom-3 left-3 bg-red-500 text-white">Sale</Badge>
+                  <Badge className="absolute bottom-3 left-3 bg-red-500 text-white">
+                    Sale
+                  </Badge>
                 )}
               </div>
 
@@ -290,28 +367,46 @@ export default function ShopPage() {
                   </h3>
                   <div className="flex items-center space-x-1">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm text-gray-600 dark:text-gray-300">{product.rating}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      {product.rating}
+                    </span>
                   </div>
                 </div>
 
-                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">{product.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                  {product.description}
+                </p>
 
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-green-600">${product.price}</span>
+                    <span className="text-2xl font-bold text-green-600">
+                      ${product.price}
+                    </span>
                     {product.originalPrice && (
-                      <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
+                      <span className="text-sm text-gray-500 line-through">
+                        ${product.originalPrice}
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center space-x-1">
-                    <TrendingDown className={`h-4 w-4 ${carbonColors[product.carbonFootprint]}`} />
-                    <span className={`text-sm font-medium ${carbonColors[product.carbonFootprint]}`}>
+                    <TrendingDown
+                      className={`h-4 w-4 ${
+                        carbonColors[product.carbonFootprint as CarbonFootprint]
+                      }`}
+                    />
+                    <span
+                      className={`text-sm font-medium ${
+                        carbonColors[product.carbonFootprint as CarbonFootprint]
+                      }`}
+                    >
                       {product.carbonFootprint.replace("-", " ")} carbon
                     </span>
                   </div>
                 </div>
 
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">{product.reviews} reviews</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                  {product.reviews} reviews
+                </div>
               </CardContent>
 
               <CardFooter className="p-6 pt-0">
@@ -348,7 +443,8 @@ export default function ShopPage() {
                 <Leaf className="h-12 w-12 text-green-500 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Organic Cotton</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Switch to organic cotton products for better skin and environment
+                  Switch to organic cotton products for better skin and
+                  environment
                 </p>
               </div>
             </div>
@@ -374,5 +470,5 @@ export default function ShopPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
